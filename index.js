@@ -1,14 +1,15 @@
 const inquirer = require('inquirer');
-const cTable = require('console.table');
 const db = require('./db/connection');
+const cTable = require('console.table');
 
+// Generates list of prompts to allow user to execute various functionality
 const startApp = () => {
     inquirer
         .prompt({
             type: 'list',
             name: 'options',
-            message: 'Please choose from the following list of employees',
-        choices: ["View Departments", "View Roles", "View Employees", "Add Department", "Add Role", "Add Employee", "Update Employee Role", "Quit"]
+            message: 'Please choose from the following list of what you would like to do to your database of employees:',
+            choices: ["View all departments", "View all roles", "View all employees", "Add a department", "Add a role", "Add an employee", "Update an employee role", "Quit"]
         })
         .then(({ options }) => {
             switch (options) {
@@ -50,12 +51,13 @@ const viewDepartments = () => {
             inquirer.prompt({
                 type: 'confirm',
                 name: 'confirm',
-                message: "Please confirm to return Main Menu"
+                message: 'Please confirm when you are ready to return back to the main menu'
             })
                 .then(confirm => {
                     startApp()
                 })
         })
+
 }
 
 //Allows user to view roles across database
@@ -69,7 +71,7 @@ const viewRoles = () => {
             inquirer.prompt({
                 type: 'confirm',
                 name: 'confirm',
-                message: "Please confirm to return Main Menu"
+                message: 'Please confirm when you are ready to return back to the main menu'
             })
                 .then(confirm => {
                     startApp()
@@ -87,9 +89,9 @@ const viewEmployees = () => {
         .then(rows => {
             console.table(rows[0])
             inquirer.prompt({
-                type: "confirm",
-                name: "confirm",
-                message: "Please confirm to return Main Menu"
+                type: 'confirm',
+                name: 'confirm',
+                message: 'Please confirm when you are ready to return back to the main menu'
             })
                 .then(confirm => {
                     startApp()
@@ -161,34 +163,33 @@ const addEmployee = () => {
             if (err) throw err
             const employeeList = result.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }))
             inquirer
-                .prompt([
-                    {
+                .prompt([{
                     type: 'text',
                     name: 'first_name',
-                    message: 'Enter employee first name:'
+                    message: 'Please enter the first name for the employee:'
                 },
                 {
                     type: 'text',
                     name: 'last_name',
-                    message: 'Enter employee last name'
+                    message: "Please enter the last name for the employee:"
                 },
                 {
                     type: 'list',
                     name: 'role_id',
-                    message: 'Select employee role',
+                    message: 'Which role is this employee under?',
                     choices: choices
                 },
                 {
                     type: 'list',
                     name: 'manager_id',
-                    message: 'Employees manager name',
+                    message: 'Who is the manager for this employee?',
                     choices: employeeList
                 }
                 ]).then(function ({ first_name, last_name, role_id, manager_id }) {
                     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`
                     db.query(sql, [first_name, last_name, role_id, manager_id], (err, result) => {
                         if (err) throw err
-                        console.log('Successfully added employee to database')
+                        console.log('Successfully added employee to the database')
                         startApp()
                     })
                 })
@@ -205,17 +206,16 @@ const updateEmployee = () => {
             if (err) throw err
             const roles = result.map(({ id, title }) => ({ name: title, value: id }))
             inquirer
-                .prompt([
-                    {
+                .prompt([{
                     type: 'list',
                     name: 'name',
-                    message: 'Which employee would you like to update role ?',
+                    message: 'Which employee would you like to update the Role for?',
                     choices: employeeList
                 },
                 {
                     type: 'list',
                     name: 'role',
-                    message: 'Which role would you like this employee to be under?',
+                    message: 'Which role would you like this employee to now be under?',
                     choices: roles
                 }
                 ]).then(function ({ role, name }) {
@@ -223,7 +223,7 @@ const updateEmployee = () => {
                     const sql = `UPDATE employee SET role_id = ${role} WHERE first_name = '${splitName[0]}' AND last_name = '${splitName[1]}'`
                     db.query(sql, (err, result) => {
                         if (err) throw err
-                        console.log('Successfully updated employee role!')
+                        console.log('Successfully updated employee to their new role!')
                         startApp()
                     })
 
