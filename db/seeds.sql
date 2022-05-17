@@ -4,10 +4,11 @@ VALUES
 ('Staff'),
 ('Employees');
 
-
 INSERT INTO role(title, salary, department_id)
+VALUES
 ('General Manager', 162000, 1),
 ('Operation Manager', 140000, 1),
+('Staff', 75000, 2),
 ('Operation Staff', 70000, 2),
 ('Financial Team', 65000, 3),
 ('Sales Team', 60000, 3);
